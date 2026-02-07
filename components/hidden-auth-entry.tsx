@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { Lock, LogIn, LogOut, Shield } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { ChevronDown, Lock, LogIn, LogOut, Shield } from "lucide-react";
 
 import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { createClient } from "@/lib/supabase/client";
@@ -15,6 +15,7 @@ type SimpleUser = {
 export function HiddenAuthEntry() {
   const [user, setUser] = useState<SimpleUser | null>(null);
   const [open, setOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isSupabaseConfigured) return;
@@ -40,6 +41,18 @@ export function HiddenAuthEntry() {
     return () => subscription.unsubscribe();
   }, []);
 
+  useEffect(() => {
+    const closeOnOutsideClick = (event: MouseEvent) => {
+      if (!containerRef.current) return;
+      if (!containerRef.current.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", closeOnOutsideClick);
+    return () => document.removeEventListener("mousedown", closeOnOutsideClick);
+  }, []);
+
   const signInWithGoogle = async () => {
     if (!isSupabaseConfigured) return;
     const supabase = createClient();
@@ -60,48 +73,54 @@ export function HiddenAuthEntry() {
   };
 
   return (
-    <div className="fixed right-4 top-4 z-50">
+    <div ref={containerRef} className="fixed right-4 top-4 z-50">
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}
         title="管理员入口"
-        className="rounded-full border border-slate-300 bg-white/70 p-2 text-slate-500 shadow-sm backdrop-blur transition-colors hover:text-slate-900"
+        className="inline-flex h-12 w-[104px] items-center justify-center gap-2 rounded-full border border-[#e3e3e1] bg-white text-[#6f6e69] shadow-[0_1px_2px_rgba(15,15,15,0.05)] transition-colors hover:text-[#191919]"
       >
         <Shield className="h-4 w-4" />
+        <ChevronDown
+          className={`h-3.5 w-3.5 transition-transform ${open ? "rotate-180" : ""}`}
+        />
       </button>
 
       {open ? (
-        <div className="mt-2 w-56 rounded-xl border border-slate-200 bg-white p-2 shadow-xl">
+        <div className="absolute right-0 top-[calc(100%+8px)] w-[260px] rounded-xl border border-[#e8e8e6] bg-white p-2 shadow-[0_10px_30px_rgba(15,15,15,0.08)]">
           {user ? (
             <>
-              <p className="px-2 py-1 text-xs text-slate-500">{user.email ?? "已登录"}</p>
+              <p className="truncate px-2 py-1 text-[12px] text-[#8f8e8a]">{user.email ?? "已登录"}</p>
               <Link
                 href="/admin"
-                className="mt-1 flex items-center gap-2 rounded-lg px-2 py-2 text-sm hover:bg-slate-100"
+                className="mt-1 flex items-center gap-2 rounded-lg px-2 py-2 text-[13px] font-medium text-[#37352f] transition-colors hover:bg-[#f5f5f4]"
                 onClick={() => setOpen(false)}
               >
                 <Lock className="h-4 w-4" />
-                管理员控制台
+                进入管理员控制台
               </Link>
               <button
                 type="button"
                 onClick={signOut}
-                className="mt-1 flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-sm hover:bg-slate-100"
+                className="mt-1 flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-[13px] font-medium text-[#5f5e5b] transition-colors hover:bg-[#f5f5f4]"
               >
                 <LogOut className="h-4 w-4" />
                 退出登录
               </button>
             </>
           ) : (
-            <button
-              type="button"
-              onClick={signInWithGoogle}
-              disabled={!isSupabaseConfigured}
-              className="flex w-full items-center gap-2 rounded-lg px-2 py-2 text-left text-sm hover:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              <LogIn className="h-4 w-4" />
-              使用 Google 登录
-            </button>
+            <>
+              <p className="px-2 py-1 text-[12px] text-[#8f8e8a]">管理员入口（对游客隐藏权限）</p>
+              <button
+                type="button"
+                onClick={signInWithGoogle}
+                disabled={!isSupabaseConfigured}
+                className="mt-1 flex w-full items-center gap-2 rounded-lg border border-[#e6e6e3] bg-white px-2 py-2 text-left text-[13px] font-medium text-[#37352f] transition-colors hover:bg-[#f5f5f4] disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                <LogIn className="h-4 w-4" />
+                Google 登录
+              </button>
+            </>
           )}
         </div>
       ) : null}

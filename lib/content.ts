@@ -61,6 +61,7 @@ export type HandwriteChallenge = {
   example: string;
   starterCode: string;
   testScript: string;
+  referenceSolution: string;
 };
 
 export const handwriteChallenges: HandwriteChallenge[] = [
@@ -87,6 +88,24 @@ debouncedIncrement();
 // 100ms 后，i === 1`,
     starterCode: `function debounce(fn, wait) {
   // TODO: implement debounce
+}
+`,
+    referenceSolution: `/**
+ * @param {Function} fn
+ * @param {number} wait
+ * @returns {Function}
+ */
+function debounce(fn, wait) {
+  let timerId = null;
+  return function debounced(...args) {
+    const context = this;
+    if (timerId !== null) {
+      clearTimeout(timerId);
+    }
+    timerId = setTimeout(() => {
+      fn.apply(context, args);
+    }, wait);
+  };
 }
 `,
     testScript: `
@@ -152,6 +171,33 @@ emitter.emit('tick', 2);
   };
 }
 `,
+    referenceSolution: `type Handler = (...args: unknown[]) => void;
+
+function createEmitter() {
+  const eventMap = new Map<string, Set<Handler>>();
+
+  return {
+    on(event, handler) {
+      const handlers = eventMap.get(event) ?? new Set<Handler>();
+      handlers.add(handler);
+      eventMap.set(event, handlers);
+    },
+    off(event, handler) {
+      const handlers = eventMap.get(event);
+      if (!handlers) return;
+      handlers.delete(handler);
+      if (handlers.size === 0) {
+        eventMap.delete(event);
+      }
+    },
+    emit(event, ...args) {
+      const handlers = eventMap.get(event);
+      if (!handlers) return;
+      handlers.forEach((handler) => handler(...args));
+    },
+  };
+}
+`,
     testScript: `
 if (typeof createEmitter !== "function") {
   throw new Error("请先定义 createEmitter 函数");
@@ -199,6 +245,23 @@ fn(); // ignored
 fn(); // called = 2`,
     starterCode: `function throttle(fn, wait) {
   // TODO: implement throttle
+}
+`,
+    referenceSolution: `/**
+ * @param {Function} fn
+ * @param {number} wait
+ * @returns {Function}
+ */
+function throttle(fn, wait) {
+  let lastInvoke = 0;
+  return function throttled(...args) {
+    const now = Date.now();
+    if (now - lastInvoke < wait) {
+      return;
+    }
+    lastInvoke = now;
+    fn.apply(this, args);
+  };
 }
 `,
     testScript: `

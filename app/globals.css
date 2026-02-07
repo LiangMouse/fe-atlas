@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "@uiw/react-md-editor/markdown-editor.css";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -48,24 +49,24 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(0.99 0.008 230);
-  --foreground: oklch(0.24 0.018 252);
-  --card: oklch(0.995 0.005 220);
-  --card-foreground: oklch(0.24 0.018 252);
-  --popover: oklch(0.995 0.005 220);
-  --popover-foreground: oklch(0.24 0.018 252);
-  --primary: oklch(0.57 0.19 227);
-  --primary-foreground: oklch(0.98 0.005 220);
-  --secondary: oklch(0.95 0.02 215);
-  --secondary-foreground: oklch(0.3 0.02 252);
-  --muted: oklch(0.96 0.01 220);
-  --muted-foreground: oklch(0.5 0.02 250);
-  --accent: oklch(0.92 0.045 95);
-  --accent-foreground: oklch(0.3 0.03 80);
+  --background: oklch(0.986 0.002 106);
+  --foreground: oklch(0.3 0.008 84);
+  --card: oklch(0.995 0.002 106);
+  --card-foreground: oklch(0.3 0.008 84);
+  --popover: oklch(0.995 0.002 106);
+  --popover-foreground: oklch(0.3 0.008 84);
+  --primary: oklch(0.2 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.965 0.002 106);
+  --secondary-foreground: oklch(0.36 0.008 84);
+  --muted: oklch(0.965 0.002 106);
+  --muted-foreground: oklch(0.5 0.008 84);
+  --accent: oklch(0.958 0.002 106);
+  --accent-foreground: oklch(0.36 0.008 84);
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.9 0.012 230);
-  --input: oklch(0.9 0.012 230);
-  --ring: oklch(0.6 0.16 227);
+  --border: oklch(0.91 0.002 106);
+  --input: oklch(0.91 0.002 106);
+  --ring: oklch(0.55 0 0);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -121,9 +122,6 @@
   }
   body {
     @apply bg-background text-foreground;
-    background-image:
-      radial-gradient(circle at 12% 8%, rgba(56, 189, 248, 0.14), transparent 28%),
-      radial-gradient(circle at 88% 16%, rgba(245, 158, 11, 0.12), transparent 26%),
-      linear-gradient(180deg, rgba(255, 255, 255, 0.6), rgba(248, 250, 252, 0.94));
+    background-image: none;
   }
 }
