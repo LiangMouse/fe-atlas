@@ -8,8 +8,7 @@ export type PracticeQuestion = {
   category: "JavaScript" | "TypeScript";
   duration: string;
   solvedCount: string;
-  description: string[];
-  example: string;
+  description: string;
   starterCode: string;
   testScript: string;
   referenceSolution: string;
@@ -34,25 +33,7 @@ type RawQuestion = {
   reference_solution: string;
 };
 
-function parseDescription(raw: string) {
-  const codeBlockMatch = raw.match(/```(?:\w+)?\n([\s\S]*?)```/);
-  const example = codeBlockMatch?.[1]?.trim() ?? "";
-
-  const contentWithoutCode = raw.replace(/```[\s\S]*?```/g, "").trim();
-  const description = contentWithoutCode
-    .split(/\n{2,}/)
-    .map((item) => item.trim())
-    .filter(Boolean);
-
-  return {
-    description,
-    example,
-  };
-}
-
 function toPracticeQuestion(item: RawQuestion): PracticeQuestion {
-  const parsed = parseDescription(item.description);
-
   return {
     id: item.id,
     slug: item.slug,
@@ -61,8 +42,7 @@ function toPracticeQuestion(item: RawQuestion): PracticeQuestion {
     category: item.category,
     duration: item.duration,
     solvedCount: item.solved_count ?? "0 完成",
-    description: parsed.description,
-    example: parsed.example,
+    description: item.description,
     starterCode: item.starter_code,
     testScript: item.test_script,
     referenceSolution: item.reference_solution || "暂未提供参考答案",

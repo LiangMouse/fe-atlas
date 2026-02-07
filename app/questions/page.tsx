@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 export default async function QuestionsPage() {
   const questions = await getPublishedQuestions();
   return (
-    <main className="mx-auto w-full max-w-[1680px] px-4 py-3 sm:px-6 lg:px-8">
+    <main className="mx-auto h-full w-full max-w-[1680px] overflow-y-auto px-4 py-3 sm:px-6 lg:px-8">
       <section className="rounded-2xl border border-slate-300/80 bg-white/80 p-6 shadow-[0_16px_36px_rgba(15,23,42,0.08)] backdrop-blur-sm sm:p-8">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <div>

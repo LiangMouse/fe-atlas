@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 export default async function AdminPage() {
   if (!isSupabaseConfigured) {
     return (
-      <main className="mx-auto min-h-screen max-w-3xl px-4 py-16 sm:px-6">
+      <main className="mx-auto h-full max-w-3xl overflow-y-auto px-4 py-10 sm:px-6 sm:py-16">
         <h1 className="text-2xl font-bold">管理员入口</h1>
         <p className="mt-3 text-slate-600">
           当前未配置 Supabase 环境变量。请先配置
@@ -42,7 +42,7 @@ export default async function AdminPage() {
   }
 
   return (
-    <main className="mx-auto min-h-screen max-w-7xl px-5 py-10 sm:px-8">
+    <main className="mx-auto h-full max-w-7xl overflow-y-auto px-5 py-8 sm:px-8 sm:py-10">
       <header className="mb-6 rounded-xl border border-[#e9e9e7] bg-white px-5 py-4">
         <h1 className="text-2xl font-semibold tracking-tight text-[#191919]">管理员控制台</h1>
         <p className="mt-2 text-sm text-[#5f5e5b]">当前账号：{user.email ?? user.id}</p>

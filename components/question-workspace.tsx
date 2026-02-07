@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { useEffect, useMemo, useState } from "react";
 import { CheckCircle2, Clock3, Code2, Play, UserRound } from "lucide-react";
 import type { Monaco } from "@monaco-editor/react";
+import MarkdownPreview from "@uiw/react-markdown-preview";
 
 import type { PracticeQuestion, PracticeQuestionNavItem } from "@/lib/questions";
 
@@ -85,8 +86,8 @@ export function QuestionWorkspace({
   };
 
   return (
-    <div className="px-4 pb-4 sm:px-6 lg:px-8">
-      <section className="mx-auto mb-4 max-w-[1680px] rounded-2xl border border-slate-300/75 bg-white/75 px-4 py-3 backdrop-blur-sm sm:px-5">
+    <div className="flex h-full flex-col overflow-hidden px-4 py-3 sm:px-6 sm:py-4 lg:px-8">
+      <section className="mx-auto mb-3 w-full max-w-[1680px] shrink-0 rounded-2xl border border-slate-300/75 bg-white/75 px-4 py-3 backdrop-blur-sm sm:px-5">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-2 text-xs text-slate-500 sm:text-sm">
             <Link href="/questions" className="font-medium transition-colors hover:text-slate-900">
@@ -106,8 +107,8 @@ export function QuestionWorkspace({
         </div>
       </section>
 
-      <section className="mx-auto grid max-w-[1680px] gap-4 xl:grid-cols-[0.96fr_1.04fr]">
-        <article className="flex min-h-[calc(100vh-190px)] flex-col overflow-hidden rounded-2xl border border-slate-300/80 bg-white/85 shadow-[0_18px_40px_rgba(15,23,42,0.08)] backdrop-blur-sm">
+      <section className="mx-auto grid min-h-0 w-full max-w-[1680px] flex-1 gap-4 xl:grid-cols-[0.96fr_1.04fr]">
+        <article className="flex min-h-0 flex-col overflow-hidden rounded-2xl border border-slate-300/80 bg-white/85 shadow-[0_18px_40px_rgba(15,23,42,0.08)] backdrop-blur-sm">
           <div className="flex items-center gap-1 border-b border-slate-200 bg-slate-50 px-3 py-2 text-sm">
             {(["description", "solution", "submission"] as LeftTab[]).map((tab) => (
               <button
@@ -125,7 +126,7 @@ export function QuestionWorkspace({
             ))}
           </div>
 
-          <div className="flex-1 space-y-6 overflow-auto p-6 sm:p-7">
+          <div className="flex-1 space-y-6 overflow-y-auto p-6 sm:p-7">
             <div>
               <h1 className="text-3xl font-semibold tracking-tight text-slate-900">{challenge.title}</h1>
               <div className="mt-3 flex flex-wrap items-center gap-4 text-sm text-slate-500">
@@ -149,20 +150,13 @@ export function QuestionWorkspace({
             </div>
 
             {leftTab === "description" ? (
-              <>
-                {challenge.description.map((paragraph) => (
-                  <p key={paragraph} className="text-[16px] leading-8 text-slate-700">
-                    {paragraph}
-                  </p>
-                ))}
-
-                <div>
-                  <h2 className="mb-3 text-2xl font-semibold text-slate-900">例子</h2>
-                  <pre className="overflow-x-auto rounded-xl border border-slate-200 bg-slate-950 p-4 text-sm leading-7 text-slate-100">
-                    <code>{challenge.example}</code>
-                  </pre>
-                </div>
-              </>
+              <div data-color-mode="light" className="description-markdown">
+                <MarkdownPreview
+                  source={challenge.description}
+                  wrapperElement={{ "data-color-mode": "light" }}
+                  className="!bg-transparent !p-0 text-slate-700"
+                />
+              </div>
             ) : null}
 
             {leftTab === "solution" ? (
@@ -184,7 +178,7 @@ export function QuestionWorkspace({
           </div>
         </article>
 
-        <article className="flex min-h-[calc(100vh-190px)] flex-col overflow-hidden rounded-2xl border border-slate-300/80 bg-slate-950 shadow-[0_18px_40px_rgba(2,6,23,0.35)]">
+        <article className="flex min-h-0 flex-col overflow-hidden rounded-2xl border border-slate-300/80 bg-slate-950 shadow-[0_18px_40px_rgba(2,6,23,0.35)]">
           <div className="flex items-center justify-between border-b border-slate-700 bg-slate-900 px-3 py-2">
             <div className="flex items-center gap-2 text-sm">
               <span className="rounded-md border border-slate-500 bg-slate-800 px-3 py-1 text-slate-100">代码</span>
@@ -264,7 +258,7 @@ export function QuestionWorkspace({
         </article>
       </section>
 
-      <aside className="mx-auto mt-4 flex max-w-[1680px] flex-wrap items-center gap-2">
+      <aside className="mx-auto mt-3 flex w-full max-w-[1680px] shrink-0 items-center gap-2 overflow-x-auto pb-1">
         {relatedChallenges.map((item) => (
           <Link
             key={item.slug}

@@ -451,12 +451,15 @@ export function AdminConsole() {
             <form onSubmit={submitQuestion} className="grid gap-3 rounded-lg border border-[#ececeb] bg-[#fafaf9] p-4">
               <div className="grid gap-2 rounded-lg border border-dashed border-[#dddcd8] bg-white p-3">
                 <p className="text-xs font-medium text-[#6f6e69]">AI 一键优化</p>
-                <textarea
-                  value={questionPromptDraft}
-                  onChange={(event) => setQuestionPromptDraft(event.target.value)}
-                  placeholder="粘贴模糊题目草稿（可含描述/代码片段/示例），AI 会自动补全清晰题目描述、两个示例、模板代码和测试用例。"
-                  className="min-h-24 rounded-lg border border-[#e2e2df] bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#d9d9d6]"
-                />
+                <label className="grid gap-1">
+                  <span className="text-xs font-medium text-[#5f5e5b]">题目草稿输入</span>
+                  <textarea
+                    value={questionPromptDraft}
+                    onChange={(event) => setQuestionPromptDraft(event.target.value)}
+                    placeholder="粘贴模糊题目草稿（可含描述/代码片段/示例）"
+                    className="min-h-24 rounded-lg border border-[#e2e2df] bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#d9d9d6]"
+                  />
+                </label>
                 <div className="flex items-center justify-between gap-2">
                   <p className="text-xs text-[#8f8e8a]">若上方留空，会基于当前表单已填内容优化。</p>
                   <button
@@ -472,38 +475,68 @@ export function AdminConsole() {
               </div>
 
               <div className="grid gap-3 sm:grid-cols-2">
-                <input {...questionForm.register("title")} placeholder="题目标题" className="rounded-lg border border-[#e2e2df] bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#d9d9d6]" />
-                <input {...questionForm.register("slug")} placeholder="slug (e.g. my-question)" className="rounded-lg border border-[#e2e2df] bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#d9d9d6]" />
+                <label className="grid gap-1">
+                  <span className="text-xs font-medium text-[#5f5e5b]">题目标题</span>
+                  <input {...questionForm.register("title")} placeholder="例如：实现函数柯里化" className="rounded-lg border border-[#e2e2df] bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#d9d9d6]" />
+                </label>
+                <label className="grid gap-1">
+                  <span className="text-xs font-medium text-[#5f5e5b]">题目 slug</span>
+                  <input {...questionForm.register("slug")} placeholder="例如：implement-curry" className="rounded-lg border border-[#e2e2df] bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#d9d9d6]" />
+                </label>
               </div>
               {(questionForm.formState.errors.title || questionForm.formState.errors.slug) ? (
                 <p className="text-xs text-rose-600">{questionForm.formState.errors.title?.message || questionForm.formState.errors.slug?.message}</p>
               ) : null}
 
-              <textarea {...questionForm.register("description")} placeholder="题目描述" className="min-h-20 rounded-lg border border-[#e2e2df] bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#d9d9d6]" />
+              <label className="grid gap-1">
+                <span className="text-xs font-medium text-[#5f5e5b]">题目描述</span>
+                <textarea {...questionForm.register("description")} placeholder="题目说明、示例、限制与提示" className="min-h-20 rounded-lg border border-[#e2e2df] bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#d9d9d6]" />
+              </label>
               {questionForm.formState.errors.description ? <p className="text-xs text-rose-600">{questionForm.formState.errors.description.message}</p> : null}
 
-              <textarea {...questionForm.register("starterCode")} placeholder="题目原始代码" className="min-h-24 rounded-lg border border-[#e2e2df] bg-white px-3 py-2 font-mono text-xs outline-none focus:ring-2 focus:ring-[#d9d9d6]" />
+              <label className="grid gap-1">
+                <span className="text-xs font-medium text-[#5f5e5b]">题目模板代码</span>
+                <textarea {...questionForm.register("starterCode")} placeholder="候选人起始代码（含函数注解）" className="min-h-24 rounded-lg border border-[#e2e2df] bg-white px-3 py-2 font-mono text-xs outline-none focus:ring-2 focus:ring-[#d9d9d6]" />
+              </label>
               {questionForm.formState.errors.starterCode ? <p className="text-xs text-rose-600">{questionForm.formState.errors.starterCode.message}</p> : null}
 
-              <textarea {...questionForm.register("testScript")} placeholder="测试脚本" className="min-h-24 rounded-lg border border-[#e2e2df] bg-white px-3 py-2 font-mono text-xs outline-none focus:ring-2 focus:ring-[#d9d9d6]" />
+              <label className="grid gap-1">
+                <span className="text-xs font-medium text-[#5f5e5b]">测试用例脚本</span>
+                <textarea {...questionForm.register("testScript")} placeholder="Jest 风格测试脚本" className="min-h-24 rounded-lg border border-[#e2e2df] bg-white px-3 py-2 font-mono text-xs outline-none focus:ring-2 focus:ring-[#d9d9d6]" />
+              </label>
               {questionForm.formState.errors.testScript ? <p className="text-xs text-rose-600">{questionForm.formState.errors.testScript.message}</p> : null}
 
-              <textarea {...questionForm.register("referenceSolution")} placeholder="参考答案（给用户学习）" className="min-h-28 rounded-lg border border-[#e2e2df] bg-white px-3 py-2 font-mono text-xs outline-none focus:ring-2 focus:ring-[#d9d9d6]" />
+              <label className="grid gap-1">
+                <span className="text-xs font-medium text-[#5f5e5b]">参考答案</span>
+                <textarea {...questionForm.register("referenceSolution")} placeholder="完整可运行实现 + 简短说明注释" className="min-h-28 rounded-lg border border-[#e2e2df] bg-white px-3 py-2 font-mono text-xs outline-none focus:ring-2 focus:ring-[#d9d9d6]" />
+              </label>
               {questionForm.formState.errors.referenceSolution ? <p className="text-xs text-rose-600">{questionForm.formState.errors.referenceSolution.message}</p> : null}
 
               <div className="grid gap-3 sm:grid-cols-4">
-                <select {...questionForm.register("level")} className="rounded-lg border border-[#e2e2df] bg-white px-3 py-2 text-sm outline-none">
-                  <option value="初级">初级</option>
-                  <option value="中等">中等</option>
-                  <option value="高级">高级</option>
-                </select>
-                <select {...questionForm.register("category")} className="rounded-lg border border-[#e2e2df] bg-white px-3 py-2 text-sm outline-none">
-                  <option value="JavaScript">JavaScript</option>
-                  <option value="TypeScript">TypeScript</option>
-                </select>
-                <input {...questionForm.register("duration")} placeholder="时长（如 15 分钟）" className="rounded-lg border border-[#e2e2df] bg-white px-3 py-2 text-sm outline-none" />
-                <label className="inline-flex items-center gap-2 rounded-lg border border-[#e2e2df] bg-white px-3 py-2 text-sm text-[#5f5e5b]">
-                  <input type="checkbox" {...questionForm.register("isPublished")} /> 发布
+                <label className="grid gap-1">
+                  <span className="text-xs font-medium text-[#5f5e5b]">难度</span>
+                  <select {...questionForm.register("level")} className="rounded-lg border border-[#e2e2df] bg-white px-3 py-2 text-sm outline-none">
+                    <option value="初级">初级</option>
+                    <option value="中等">中等</option>
+                    <option value="高级">高级</option>
+                  </select>
+                </label>
+                <label className="grid gap-1">
+                  <span className="text-xs font-medium text-[#5f5e5b]">技术分类</span>
+                  <select {...questionForm.register("category")} className="rounded-lg border border-[#e2e2df] bg-white px-3 py-2 text-sm outline-none">
+                    <option value="JavaScript">JavaScript</option>
+                    <option value="TypeScript">TypeScript</option>
+                  </select>
+                </label>
+                <label className="grid gap-1">
+                  <span className="text-xs font-medium text-[#5f5e5b]">建议时长</span>
+                  <input {...questionForm.register("duration")} placeholder="例如：15 分钟" className="rounded-lg border border-[#e2e2df] bg-white px-3 py-2 text-sm outline-none" />
+                </label>
+                <label className="grid gap-1">
+                  <span className="text-xs font-medium text-[#5f5e5b]">发布状态</span>
+                  <span className="inline-flex items-center gap-2 rounded-lg border border-[#e2e2df] bg-white px-3 py-2 text-sm text-[#5f5e5b]">
+                    <input type="checkbox" {...questionForm.register("isPublished")} /> 发布
+                  </span>
                 </label>
               </div>
 
@@ -543,25 +576,37 @@ export function AdminConsole() {
         {tab === "notes" ? (
           <div className="space-y-4">
             <form onSubmit={submitNote} className="grid gap-3 rounded-lg border border-[#ececeb] bg-[#fafaf9] p-4">
-              <input {...noteForm.register("title")} placeholder="八股文标题" className="rounded-lg border border-[#e2e2df] bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#d9d9d6]" />
+              <label className="grid gap-1">
+                <span className="text-xs font-medium text-[#5f5e5b]">标题</span>
+                <input {...noteForm.register("title")} placeholder="八股文标题" className="rounded-lg border border-[#e2e2df] bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#d9d9d6]" />
+              </label>
               {noteForm.formState.errors.title ? <p className="text-xs text-rose-600">{noteForm.formState.errors.title.message}</p> : null}
 
-              <textarea {...noteForm.register("digest")} placeholder="摘要" className="min-h-20 rounded-lg border border-[#e2e2df] bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#d9d9d6]" />
+              <label className="grid gap-1">
+                <span className="text-xs font-medium text-[#5f5e5b]">摘要</span>
+                <textarea {...noteForm.register("digest")} placeholder="一句话概述核心价值" className="min-h-20 rounded-lg border border-[#e2e2df] bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#d9d9d6]" />
+              </label>
               {noteForm.formState.errors.digest ? <p className="text-xs text-rose-600">{noteForm.formState.errors.digest.message}</p> : null}
 
               <Controller
                 control={noteForm.control}
                 name="tags"
                 render={({ field }) => (
-                  <input
-                    value={field.value.join(", ")}
-                    onChange={(e) => field.onChange(e.target.value.split(",").map((tag) => tag.trim()).filter(Boolean))}
-                    placeholder="标签（逗号分隔）"
-                    className="rounded-lg border border-[#e2e2df] bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#d9d9d6]"
-                  />
+                  <label className="grid gap-1">
+                    <span className="text-xs font-medium text-[#5f5e5b]">标签</span>
+                    <input
+                      value={field.value.join(", ")}
+                      onChange={(e) => field.onChange(e.target.value.split(",").map((tag) => tag.trim()).filter(Boolean))}
+                      placeholder="逗号分隔，例如：浏览器,缓存,性能"
+                      className="rounded-lg border border-[#e2e2df] bg-white px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[#d9d9d6]"
+                    />
+                  </label>
                 )}
               />
 
+              <div className="grid gap-1">
+                <span className="text-xs font-medium text-[#5f5e5b]">正文（Markdown）</span>
+              </div>
               <Controller
                 control={noteForm.control}
                 name="content"
@@ -576,8 +621,11 @@ export function AdminConsole() {
                 )}
               />
 
-              <label className="inline-flex w-fit items-center gap-2 rounded-lg border border-[#e2e2df] bg-white px-3 py-2 text-sm text-[#5f5e5b]">
-                <input type="checkbox" {...noteForm.register("isPublished")} /> 发布
+              <label className="grid gap-1">
+                <span className="text-xs font-medium text-[#5f5e5b]">发布状态</span>
+                <span className="inline-flex w-fit items-center gap-2 rounded-lg border border-[#e2e2df] bg-white px-3 py-2 text-sm text-[#5f5e5b]">
+                  <input type="checkbox" {...noteForm.register("isPublished")} /> 发布
+                </span>
               </label>
 
               <div className="flex items-center gap-2">

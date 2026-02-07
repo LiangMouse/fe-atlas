@@ -6,7 +6,7 @@ import { interviewNotes } from "@/lib/content";
 
 export default function NotesPage() {
   return (
-    <main className="mx-auto min-h-screen max-w-5xl px-4 py-10 sm:px-6">
+    <main className="mx-auto h-full max-w-5xl overflow-y-auto px-4 py-8 sm:px-6 sm:py-10">
       <div className="mb-8 flex items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">八股文</h1>

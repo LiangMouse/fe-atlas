@@ -125,3 +125,23 @@
     background-image: none;
   }
 }
+
+.description-markdown .wmde-markdown {
+  background-color: transparent !important;
+  color: rgb(51 65 85) !important;
+  font-size: 16px;
+  line-height: 2;
+}
+
+.description-markdown .wmde-markdown h1,
+.description-markdown .wmde-markdown h2,
+.description-markdown .wmde-markdown h3,
+.description-markdown .wmde-markdown h4,
+.description-markdown .wmde-markdown h5,
+.description-markdown .wmde-markdown h6 {
+  color: rgb(15 23 42);
+}
+
+.description-markdown .wmde-markdown pre {
+  border-radius: 0.75rem;
+}
