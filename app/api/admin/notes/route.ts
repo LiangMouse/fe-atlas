@@ -3,8 +3,20 @@ import { NextRequest, NextResponse } from "next/server";
 import { noteFormSchema } from "@/lib/admin-schemas";
 import { requireAdminFromRequest } from "@/lib/auth/require-admin";
 import { logAdminAction, logServerError } from "@/lib/logger";
+import { ensureValidNoteSlug } from "@/lib/note-route";
+import { resolveNoteType } from "@/lib/note-types";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { createAdminClient } from "@/lib/supabase/admin";
+
+function buildDigestFromContent(content: string, fallbackTitle: string) {
+  const plain = content
+    .replace(/```[\s\S]*?```/g, "")
+    .replace(/^#{1,6}\s*/gm, "")
+    .replace(/\n+/g, " ")
+    .trim();
+  if (!plain) return `${fallbackTitle} 面试要点速览`;
+  return plain.slice(0, 80);
+}
 
 export async function GET(request: NextRequest) {
   const auth = await requireAdminFromRequest(request);
@@ -14,19 +26,37 @@ export async function GET(request: NextRequest) {
 
   try {
     const supabaseAdmin = createAdminClient();
-    const { data, error } = await supabaseAdmin
+    const query = supabaseAdmin
       .from("admin_notes")
-      .select("id,title,digest,tags,content,is_published,created_at")
+      .select("id,title,note_type,note_slug,digest,tags,content,is_published,created_at")
       .order("created_at", { ascending: false })
       .limit(100);
+    const first = await query;
+    let data = (first.data ?? []) as Array<Record<string, unknown>>;
+    let error = first.error;
+
+    if (error?.message?.includes("note_type")) {
+      const fallback = await supabaseAdmin
+        .from("admin_notes")
+        .select("id,title,note_slug,digest,tags,content,is_published,created_at")
+        .order("created_at", { ascending: false })
+        .limit(100);
+      data = (fallback.data ?? []) as Array<Record<string, unknown>>;
+      error = fallback.error;
+    }
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
-    const notes = (data ?? []).map((item) => ({
+    const notes = data.map((item) => ({
       id: item.id,
       title: item.title,
+      noteSlug: ensureValidNoteSlug(String(item.note_slug ?? ""), `note-${String(item.id)}`),
+      noteType: resolveNoteType(
+        (item.note_type as string | null | undefined) ?? null,
+        `${String(item.title ?? "")}\n${String(item.digest ?? "")}\n${Array.isArray(item.tags) ? item.tags.join(" ") : ""}\n${String(item.content ?? "")}`,
+      ),
       digest: item.digest,
       tags: item.tags ?? [],
       content: item.content ?? "",
@@ -76,15 +106,37 @@ export async function POST(request: NextRequest) {
 
   try {
     const supabaseAdmin = createAdminClient();
-    const { error } = await supabaseAdmin.from("admin_notes").insert({
+    const insertPayload = {
       title: body.title,
-      digest: body.digest,
+      note_type: body.noteType,
+      note_slug: body.noteSlug,
+      digest: buildDigestFromContent(body.content, body.title),
       tags: body.tags,
       content: body.content || null,
       is_published: body.isPublished,
       created_by: auth.user.id,
       created_by_email: auth.user.email ?? null,
-    });
+    };
+
+    const { error } = await supabaseAdmin.from("admin_notes").insert(insertPayload);
+    if (error?.message?.includes("note_type")) {
+      return NextResponse.json(
+        { error: "数据库缺少 note_type 字段，请先执行迁移后再创建八股文。" },
+        { status: 500 },
+      );
+    }
+    if (error?.message?.includes("note_slug")) {
+      return NextResponse.json(
+        { error: "数据库缺少 note_slug 字段，请先执行迁移后再创建八股文。" },
+        { status: 500 },
+      );
+    }
+    if (error?.code === "23505") {
+      return NextResponse.json(
+        { error: "发布态下该「类型 + slug」已存在，请修改 slug 或先下线同路由内容。" },
+        { status: 409 },
+      );
+    }
 
     if (error) {
       logServerError("admin.notes.create", error, { adminUserId: auth.user.id });
@@ -95,6 +147,7 @@ export async function POST(request: NextRequest) {
       adminUserId: auth.user.id,
       adminEmail: auth.user.email,
       title: body.title,
+      noteType: body.noteType,
     });
     return NextResponse.json({ ok: true });
   } catch (error) {

@@ -6,6 +6,16 @@ import { logAdminAction, logServerError } from "@/lib/logger";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { createAdminClient } from "@/lib/supabase/admin";
 
+function buildDigestFromContent(content: string, fallbackTitle: string) {
+  const plain = content
+    .replace(/```[\s\S]*?```/g, "")
+    .replace(/^#{1,6}\s*/gm, "")
+    .replace(/\n+/g, " ")
+    .trim();
+  if (!plain) return `${fallbackTitle} 面试要点速览`;
+  return plain.slice(0, 80);
+}
+
 function parseId(id: string) {
   const num = Number(id);
   if (!Number.isInteger(num) || num <= 0) return null;
@@ -57,16 +67,55 @@ export async function PATCH(
   try {
     const patch: Record<string, unknown> = {};
     if (body.title !== undefined) patch.title = body.title;
-    if (body.digest !== undefined) patch.digest = body.digest;
+    if (body.noteType !== undefined) patch.note_type = body.noteType;
+    if (body.noteSlug !== undefined) patch.note_slug = body.noteSlug;
     if (body.tags !== undefined) patch.tags = body.tags;
     if (body.content !== undefined) patch.content = body.content || null;
     if (body.isPublished !== undefined) patch.is_published = body.isPublished;
+    if (body.content !== undefined || body.title !== undefined) {
+      patch.digest = buildDigestFromContent(body.content ?? "", body.title ?? "八股文");
+    }
 
     const supabaseAdmin = createAdminClient();
-    const { error } = await supabaseAdmin
+    let { error } = await supabaseAdmin
       .from("admin_notes")
       .update(patch)
       .eq("id", noteId);
+
+    if (error?.message?.includes("note_type")) {
+      if (body.noteType !== undefined) {
+        return NextResponse.json(
+          { error: "数据库缺少 note_type 字段，请先执行迁移后再更新八股文类型。" },
+          { status: 500 },
+        );
+      }
+      delete patch.note_type;
+      const fallback = await supabaseAdmin
+        .from("admin_notes")
+        .update(patch)
+        .eq("id", noteId);
+      error = fallback.error;
+    }
+    if (error?.message?.includes("note_slug")) {
+      if (body.noteSlug !== undefined) {
+        return NextResponse.json(
+          { error: "数据库缺少 note_slug 字段，请先执行迁移后再更新八股文 slug。" },
+          { status: 500 },
+        );
+      }
+      delete patch.note_slug;
+      const fallback = await supabaseAdmin
+        .from("admin_notes")
+        .update(patch)
+        .eq("id", noteId);
+      error = fallback.error;
+    }
+    if (error?.code === "23505") {
+      return NextResponse.json(
+        { error: "发布态下该「类型 + slug」已存在，请修改 slug 或先下线同路由内容。" },
+        { status: 409 },
+      );
+    }
 
     if (error) {
       logServerError("admin.notes.patch", error, {

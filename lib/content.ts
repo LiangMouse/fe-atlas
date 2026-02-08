@@ -4,28 +4,6 @@ export type Topic = {
   tags: string[];
 };
 
-export const interviewNotes: Topic[] = [
-  {
-    title: "浏览器渲染流水线（从 HTML 到像素）",
-    digest: "DOM/CSSOM 合并、Layout、Paint、Composite 的触发条件与优化手段。",
-    tags: ["浏览器", "性能", "渲染"],
-  },
-  {
-    title: "HTTP 缓存与协商缓存",
-    digest: "Cache-Control、ETag、If-None-Match 在静态资源版本管理中的组合策略。",
-    tags: ["网络", "HTTP"],
-  },
-  {
-    title: "事件循环与微任务",
-    digest: "Node 与浏览器事件循环差异，Promise/Microtask 与宏任务执行时机。",
-    tags: ["JavaScript", "异步"],
-  },
-  {
-    title: "React 并发渲染与调度",
-    digest: "批处理、优先级、可中断渲染和 UI 响应速度之间的关系。",
-    tags: ["React", "架构"],
-  },
-];
 
 export const algorithmSets: Topic[] = [
   {

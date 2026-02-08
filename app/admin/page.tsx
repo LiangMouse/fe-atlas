@@ -42,16 +42,12 @@ export default async function AdminPage() {
   }
 
   return (
-    <main className="mx-auto h-full max-w-7xl overflow-y-auto px-5 py-8 sm:px-8 sm:py-10">
-      <header className="mb-6 rounded-xl border border-[#e9e9e7] bg-white px-5 py-4">
-        <h1 className="text-2xl font-semibold tracking-tight text-[#191919]">管理员控制台</h1>
-        <p className="mt-2 text-sm text-[#5f5e5b]">当前账号：{user.email ?? user.id}</p>
+    <main className="mx-auto h-full w-full max-w-[1680px] overflow-y-auto px-4 py-3 sm:px-6 lg:px-8">
+      <header className="mb-4 rounded-2xl border border-slate-300/80 bg-white/80 px-5 py-4 shadow-[0_16px_36px_rgba(15,23,42,0.08)] backdrop-blur-sm">
+        <h1 className="text-2xl font-semibold tracking-tight text-slate-900">管理员控制台</h1>
+        <p className="mt-2 text-sm text-slate-600">当前账号：{user.email ?? user.id}</p>
       </header>
 
-      <div className="mb-4 rounded-xl border border-[#ececeb] bg-[#fafaf9] px-4 py-3 text-sm text-[#5f5e5b]">
-        已上线模块：用户列表、题目新增、八股文新增。
-        <span className="ml-1 font-medium text-[#37352f]">建议下一步加：编辑/删除、发布审核流、操作日志。</span>
-      </div>
 
       <AdminConsole />
     </main>

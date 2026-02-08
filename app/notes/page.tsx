@@ -1,52 +1,11 @@
-import Link from "next/link";
+import { Suspense } from "react";
 
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { interviewNotes } from "@/lib/content";
-import { getPublishedNotes } from "@/lib/notes";
+import { NotesPageClient } from "@/components/notes/notes-page-client";
 
-export const dynamic = "force-dynamic";
-
-export default async function NotesPage() {
-  const publishedNotes = await getPublishedNotes();
-  const notes =
-    publishedNotes.length > 0
-      ? publishedNotes.map((item) => ({
-          title: item.title,
-          digest: item.digest,
-          tags: item.tags,
-        }))
-      : interviewNotes;
-
+export default function NotesPage() {
   return (
-    <main className="mx-auto h-full max-w-5xl overflow-y-auto px-4 py-8 sm:px-6 sm:py-10">
-      <div className="mb-8 flex items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">八股文</h1>
-          <p className="mt-2 text-sm text-muted-foreground">按面试真实问法整理，便于你直接输出结构化回答。</p>
-        </div>
-        <Link href="/" className="text-sm text-primary underline-offset-4 hover:underline">
-          返回首页
-        </Link>
-      </div>
-
-      <div className="grid gap-4">
-        {notes.map((item) => (
-          <Card key={item.title}>
-            <CardHeader>
-              <CardTitle>{item.title}</CardTitle>
-              <CardDescription>{item.digest}</CardDescription>
-            </CardHeader>
-            <CardContent className="mt-0 flex flex-wrap gap-2">
-              {item.tags.map((tag) => (
-                <Badge key={tag} variant="outline">
-                  {tag}
-                </Badge>
-              ))}
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </main>
+    <Suspense fallback={null}>
+      <NotesPageClient />
+    </Suspense>
   );
 }

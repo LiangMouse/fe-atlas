@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { ArrowRight, FileCode2, Flame, Sparkles, Timer } from "lucide-react";
+import { Flame, Sparkles, Timer } from "lucide-react";
 
+import { QuestionsLayout } from "@/components/questions/questions-layout";
 import { getPublishedQuestions } from "@/lib/questions";
 
 export const dynamic = "force-dynamic";
@@ -53,47 +54,7 @@ export default async function QuestionsPage() {
         </div>
       </section>
 
-      <section className="mt-4 overflow-hidden rounded-2xl border border-slate-300/80 bg-white/80 shadow-[0_14px_30px_rgba(15,23,42,0.08)] backdrop-blur-sm">
-        <div className="grid grid-cols-[1.2fr_0.8fr_0.75fr_0.75fr_80px] border-b border-slate-200 bg-slate-50 px-4 py-2 text-xs font-semibold text-slate-500">
-          <span>题目</span>
-          <span>分类</span>
-          <span>难度</span>
-          <span>通过人数</span>
-          <span />
-        </div>
-
-        <div>
-          {questions.map((item) => (
-            <Link
-              key={item.slug}
-              href={`/questions/${item.slug}`}
-              className="grid cursor-pointer grid-cols-[1.2fr_0.8fr_0.75fr_0.75fr_80px] items-center border-b border-slate-100 px-4 py-4 transition-colors last:border-0 hover:bg-slate-50/70"
-            >
-              <div className="min-w-0">
-                <p className="truncate text-[15px] font-medium text-slate-900">{item.title}</p>
-                <p className="mt-1 truncate text-xs text-slate-500">{item.duration}</p>
-              </div>
-
-              <span className="inline-flex w-fit items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-1 text-xs text-slate-600">
-                <FileCode2 className="h-3 w-3" />
-                {item.category}
-              </span>
-
-              <span className="text-sm text-slate-700">{item.level}</span>
-              <span className="text-sm text-slate-700">{item.solvedCount}</span>
-
-              <span className="inline-flex justify-end text-slate-500">
-                <ArrowRight className="h-4 w-4" />
-              </span>
-            </Link>
-          ))}
-          {questions.length === 0 ? (
-            <div className="px-4 py-8 text-center text-sm text-slate-500">
-              暂无已发布题目，请先在管理员后台发布题目。
-            </div>
-          ) : null}
-        </div>
-      </section>
+      <QuestionsLayout questions={questions} />
     </main>
   );
 }
