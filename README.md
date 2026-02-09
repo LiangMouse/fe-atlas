@@ -85,6 +85,17 @@ pnpm build
 - 管理员登录后新增/发布题目和八股文
 - 前台可看到新发布内容
 
+## 在线判题链路（WebContainer + Vitest）
+
+题库运行按钮在浏览器端完成执行，流程为：
+
+1. 启动浏览器内 WebContainer（Node 运行时）
+2. 写入 `solution.ts`、`tests.spec.ts` 与 `vitest` 配置
+3. 安装依赖并执行 `vitest run --reporter=json`
+4. 解析 JSON 报告并在页面展示用例通过情况与运行日志
+
+该方案无需单独部署判题服务，但不适合作为强对抗场景的可信判题后端。
+
 ## 回滚策略
 
 - Vercel 回滚到上一个稳定 Deployment

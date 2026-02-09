@@ -36,30 +36,6 @@ export default async function Home({
   return (
     <main className="mx-auto h-full max-w-6xl overflow-y-auto px-4 py-4 sm:px-6 sm:py-5 md:overflow-hidden lg:px-8">
       <div className="flex flex-col gap-4 md:h-full md:min-h-0">
-        <header className="flex shrink-0 items-center justify-between border-b border-[#e9e9e7] pb-3">
-          <div className="flex items-center gap-3">
-            <Image
-              src="/logo.png"
-              alt="Atlas FE Logo"
-              width={32}
-              height={32}
-              className="h-8 w-8 rounded-md border border-[#e5e5e3] bg-white shadow-sm"
-            />
-            <p className="text-sm font-medium text-[#37352f]">Atlas FE Interview Prep</p>
-          </div>
-          <nav className="hidden items-center gap-5 text-sm text-[#787774] md:flex">
-            <Link href="/questions" className="transition-colors hover:text-[#37352f]">
-              题库
-            </Link>
-            <Link href="/notes" className="transition-colors hover:text-[#37352f]">
-              知识点
-            </Link>
-            <Link href="/algorithms" className="transition-colors hover:text-[#37352f]">
-              算法
-            </Link>
-          </nav>
-        </header>
-
         <section className="shrink-0 rounded-2xl border border-[#e9e9e7] bg-white px-5 py-5 sm:px-7 sm:py-6">
           <div className="flex flex-wrap items-center gap-2 text-xs text-[#787774]">
             <span className="inline-flex items-center gap-1 rounded-md bg-[#f6f6f4] px-2 py-1">

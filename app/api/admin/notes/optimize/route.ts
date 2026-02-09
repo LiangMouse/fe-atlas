@@ -592,7 +592,7 @@ export async function POST(request: NextRequest) {
       };
 
       const supabaseAdmin = createAdminClient();
-      let draftInsert = await supabaseAdmin
+      const draftInsert = await supabaseAdmin
         .from("admin_notes")
         .insert(draftPayload)
         .select("id,title,is_published,created_at")

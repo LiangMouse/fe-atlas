@@ -2,7 +2,7 @@ import { z } from "zod";
 import { NOTE_TYPES } from "@/lib/note-types";
 
 export const questionLevelSchema = z.enum(["初级", "中等", "高级"]);
-export const questionCategorySchema = z.enum(["JavaScript", "TypeScript"]);
+export const questionCategorySchema = z.enum(["JavaScript", "React", "UI构建"]);
 
 export const questionFormSchema = z.object({
   title: z.string().trim().min(2, "题目标题至少 2 个字"),

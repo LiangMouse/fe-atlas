@@ -25,9 +25,14 @@ const SYSTEM_PROMPT = `你是资深前端面试题编辑。请把管理员给出
    - @param（每个入参名称 + 类型 + 含义）
    - @returns（返回值类型 + 含义）
    若管理员草稿里函数是 "export default function xxx(...)"，也必须补全以上注解再输出。
-4) testScript 使用 Jest 风格，包含多个测试用例，覆盖正常与边界情况；import 语句应导入 starterCode 中默认导出的函数。
+4) 请生成 testScript（Vitest 风格），包含多个测试用例，覆盖正常与边界情况；使用 import { describe, it, expect, vi } from 'vitest'，并从 ./solution 默认导入待测函数。
+4.1) 对时间相关题（如 debounce/throttle/定时器）必须使用 vi.useFakeTimers，并至少断言：
+   - wait 时间未到前不应触发
+   - wait 到达后才触发
+   - 不同 wait 值会影响触发时机
+   - 必须能杀死“忽略 wait 参数”的错误实现
 5) slug 必须是英文小写 kebab-case，仅字母/数字/连字符。
-6) level 仅可为：初级/中等/高级；category 仅可为：JavaScript/TypeScript。
+6) level 仅可为：初级/中等/高级；category 仅可为：JavaScript/React/UI构建。
 7) duration 给出建议时长，例如“15 分钟”。
 8) “提示”部分必须非常克制：最多 1-2 条、每条一句话、仅帮助理解题目目标与边界，不得直接给出关键实现思路、算法步骤或可直接照抄的解法。
 9) 必须额外产出 referenceSolution（参考答案），内容为可运行的高质量示例实现，并附少量关键思路注释，便于学习。
@@ -57,7 +62,7 @@ const QUESTION_JSON_SCHEMA = {
     testScript: { type: "string", minLength: 5 },
     referenceSolution: { type: "string", minLength: 10 },
     level: { type: "string", enum: ["初级", "中等", "高级"] },
-    category: { type: "string", enum: ["JavaScript", "TypeScript"] },
+    category: { type: "string", enum: ["JavaScript", "React", "UI构建"] },
     duration: { type: "string", minLength: 2 },
   },
 } as const;

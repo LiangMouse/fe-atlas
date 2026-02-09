@@ -59,7 +59,7 @@ type AdminQuestion = {
   testScript: string;
   referenceSolution: string;
   level: "初级" | "中等" | "高级";
-  category: "JavaScript" | "TypeScript";
+  category: "JavaScript" | "React" | "UI构建";
   duration: string;
   isPublished: boolean;
   createdAt: string;
@@ -98,6 +98,25 @@ const defaultNoteForm: NoteFormValues = {
   isPublished: false,
 };
 
+function normalizeQuestionCategory(value: string): QuestionFormValues["category"] {
+  if (value === "JavaScript" || value === "React" || value === "UI构建") {
+    return value;
+  }
+
+  if (value === "TypeScript") {
+    return "JavaScript";
+  }
+
+  return "JavaScript";
+}
+
+function normalizeAdminQuestion(item: AdminQuestion): AdminQuestion {
+  return {
+    ...item,
+    category: normalizeQuestionCategory(item.category),
+  };
+}
+
 function formatTime(value: string | null) {
   if (!value) return "-";
   return new Date(value).toLocaleString("zh-CN");
@@ -127,7 +146,7 @@ function toQuestionFormValues(item: AdminQuestion): QuestionFormValues {
     testScript: item.testScript,
     referenceSolution: item.referenceSolution,
     level: item.level,
-    category: item.category,
+    category: normalizeQuestionCategory(item.category),
     duration: item.duration,
     isPublished: item.isPublished,
   };
@@ -207,7 +226,7 @@ export function AdminConsole() {
       const response = await fetch("/api/admin/questions", { cache: "no-store" });
       const json = await response.json();
       if (!response.ok) throw new Error(json.error || "获取题目失败");
-      setQuestions(json.questions || []);
+      setQuestions(((json.questions as AdminQuestion[] | undefined) ?? []).map(normalizeAdminQuestion));
     } catch (err) {
       setError(err instanceof Error ? err.message : "获取题目失败");
     } finally {
@@ -349,7 +368,7 @@ export function AdminConsole() {
         questionForm.setValue("level", result.level, { shouldDirty: true, shouldValidate: true });
       }
       if (result.category) {
-        questionForm.setValue("category", result.category, {
+        questionForm.setValue("category", normalizeQuestionCategory(result.category), {
           shouldDirty: true,
           shouldValidate: true,
         });
@@ -788,7 +807,8 @@ export function AdminConsole() {
                         </SelectTrigger>
                         <SelectContent>
                           <SelectItem value="JavaScript">JavaScript</SelectItem>
-                          <SelectItem value="TypeScript">TypeScript</SelectItem>
+                          <SelectItem value="React">React</SelectItem>
+                          <SelectItem value="UI构建">UI构建</SelectItem>
                         </SelectContent>
                       </Select>
                     )}

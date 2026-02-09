@@ -1,5 +1,6 @@
 import { logServerError } from "@/lib/logger";
 import { isSupabaseConfigured } from "@/lib/supabase/config";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { createPublicClient } from "@/lib/supabase/public";
 
 export type PracticeQuestion = {
@@ -7,7 +8,7 @@ export type PracticeQuestion = {
   slug: string;
   title: string;
   level: "初级" | "中等" | "高级";
-  category: "JavaScript" | "TypeScript";
+  category: "JavaScript" | "React" | "UI构建";
   duration: string;
   solvedCount: string;
   description: string;
@@ -26,7 +27,7 @@ export type RawQuestion = {
   slug: string;
   title: string;
   level: "初级" | "中等" | "高级";
-  category: "JavaScript" | "TypeScript";
+  category: string;
   duration: string;
   solved_count: string | null;
   description: string;
@@ -35,13 +36,26 @@ export type RawQuestion = {
   reference_solution: string;
 };
 
+function normalizeQuestionCategory(value: string): PracticeQuestion["category"] {
+  if (value === "React" || value === "UI构建" || value === "JavaScript") {
+    return value;
+  }
+
+  // Backward compatibility: keep old TypeScript data visible.
+  if (value === "TypeScript") {
+    return "JavaScript";
+  }
+
+  return "JavaScript";
+}
+
 export function normalizePracticeQuestion(item: RawQuestion): PracticeQuestion {
   return {
     id: item.id,
     slug: item.slug,
     title: item.title,
     level: item.level,
-    category: item.category,
+    category: normalizeQuestionCategory(item.category),
     duration: item.duration,
     solvedCount: item.solved_count ?? "0 完成",
     description: item.description,
@@ -52,12 +66,13 @@ export function normalizePracticeQuestion(item: RawQuestion): PracticeQuestion {
 }
 
 export async function getPublishedQuestions() {
-  if (!isSupabaseConfigured) {
-    return [] as PracticeQuestion[];
-  }
-
   try {
-    const supabase = createPublicClient();
+    const supabase =
+      process.env.SUPABASE_SERVICE_ROLE_KEY ? createAdminClient() : isSupabaseConfigured ? createPublicClient() : null;
+    if (!supabase) {
+      return [] as PracticeQuestion[];
+    }
+
     const { data, error } = await supabase
       .from("admin_questions")
       .select("id,slug,title,level,category,duration,solved_count,description,starter_code,test_script,reference_solution")
@@ -77,12 +92,13 @@ export async function getPublishedQuestions() {
 }
 
 export async function getPublishedQuestionBySlug(slug: string) {
-  if (!isSupabaseConfigured) {
-    return null;
-  }
-
   try {
-    const supabase = createPublicClient();
+    const supabase =
+      process.env.SUPABASE_SERVICE_ROLE_KEY ? createAdminClient() : isSupabaseConfigured ? createPublicClient() : null;
+    if (!supabase) {
+      return null;
+    }
+
     const { data, error } = await supabase
       .from("admin_questions")
       .select("id,slug,title,level,category,duration,solved_count,description,starter_code,test_script,reference_solution")
